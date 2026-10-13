@@ -4,7 +4,7 @@
 <meta name="theme-color" content="#0d1117">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon-192.png">
-<title>News Terminal</title>
+<title>Newslight</title>
 <style>
 :root{--bg:#0d1117;--panel:#161b22;--line:#252c36;--fg:#e6edf3;--mut:#8b949e;--up:#3fb950;--dn:#f85149;--acc:#58a6ff}
 @media (prefers-color-scheme:light){:root{--bg:#f6f8fa;--panel:#fff;--line:#d8dee4;--fg:#1f2328;--mut:#656d76;--up:#1a7f37;--dn:#cf222e;--acc:#0969da}}
@@ -40,7 +40,8 @@ const TAGRX={
  POWER:/\b(power prices?|electricity|grid|utilit\w+|renewables?|solar|wind|battery|batteries|hydrogen|electroly\w+|ppa|nuclear)\b/i,
  CARBON:/\b(carbon|eua|ets|emissions?)\b/i,
  MACRO:/\b(fed|ecb|boe|inflation|rate cuts?|interest rates?|gdp|treasury|yields?|dollar|recession|tariffs?)\b/i,
- MARKETS:/\b(stocks?|shares|s&p|nasdaq|dow|ftse|dax|earnings)\b/i};
+ MARKETS:/\b(stocks?|shares|s&p|nasdaq|dow|ftse|dax|earnings)\b/i,
+ QUANT:/\b(quant\w*|volatility|derivatives?|value[- ]at[- ]risk|expected shortfall|backtest\w*|hedg\w+|stochastic|monte carlo|garch|algorithmic)\b/i};
 const FILTERS=["ALL",...Object.keys(TAGRX)];
 const MAXKEEP=400;
 const $=id=>document.getElementById(id);
@@ -77,6 +78,7 @@ function add(i,live){
  const nt=norm(i.title);
  if(items.has(i.id)||titles.has(nt))return;
  i.tags=Object.keys(TAGRX).filter(k=>TAGRX[k].test(i.title));
+ if(i.forceTag&&!i.tags.includes(i.forceTag))i.tags.unshift(i.forceTag);
  i.seen=Date.now(); i.live=live;
  items.set(i.id,i); titles.add(nt); schedule();
 }
@@ -99,7 +101,7 @@ function render(){
 function schedule(){if(!pending){pending=true;requestAnimationFrame(render);}}
 let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{
  localStorage.setItem("nt_items",JSON.stringify([...items.values()].sort((a,b)=>b.ts-a.ts).slice(0,MAXKEEP)
-  .map(({id,title,link,source,ts})=>({id,title,link,source,ts}))));}catch(e){}},1500);}
+  .map(({id,title,link,source,ts,forceTag})=>({id,title,link,source,ts,forceTag}))));}catch(e){}},1500);}
 
 let firstRound=true;
 async function pull(f){
@@ -107,7 +109,7 @@ async function pull(f){
   const r=await fetch("/api/feed?id="+encodeURIComponent(f.id),{cache:"no-store"});
   if(!r.ok)throw new Error(r.status);
   const list=parseXML(await r.text(),f.name);
-  list.forEach(i=>add(i,!firstRound&&!f.first));
+  list.forEach(i=>{i.forceTag=f.tag;add(i,!firstRound&&!f.first);});
   f.first=false; status[f.name]=list.length>0; save();
  }catch(e){status[f.name]=false;}
  schedule();
