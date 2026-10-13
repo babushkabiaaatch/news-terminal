@@ -7,6 +7,7 @@ const gnews = (q) =>
   `https://news.google.com/rss/search?q=${encodeURIComponent(q + " when:1d")}&hl=en-GB&gl=GB&ceid=GB:en`;
 
 // id, display name, url, poll seconds. Edit freely; push to GitHub and it redeploys.
+
 const FEEDS = [
   ["oilprice", "OilPrice", "https://oilprice.com/rss/main", 60],
   ["eia", "EIA", "https://www.eia.gov/rss/todayinenergy.xml", 300],
@@ -17,11 +18,11 @@ const FEEDS = [
   ["marketwatch", "MarketWatch", "https://feeds.marketwatch.com/marketwatch/topstories/", 60],
   ["investing", "Investing.com Commodities", "https://www.investing.com/rss/news_11.rss", 60],
   ["bbc-biz", "BBC Business", "https://feeds.bbci.co.uk/news/business/rss.xml", 90],
-  ["yahoo", "Yahoo Finance", "https://finance.yahoo.com/news/rssindex", 60],
-  ["gn-eu-gas", "GN: Gas & Power EU", gnews('TTF OR NBP OR "European gas" OR "German power"'), 120],
-  ["gn-oil", "GN: Oil", gnews("Brent OR WTI OR OPEC crude oil price"), 120],
-  ["gn-carbon", "GN: Carbon", gnews("EU carbon price EUA ETS"), 180],
-  ["gn-h2", "GN: Hydrogen/Storage", gnews('hydrogen electrolyser OR "battery storage" OR "gas storage" Germany'), 180],
+  ["euractiv", "Euractiv Energy", "https://www.euractiv.com/sections/eet/feed/", 120],
+  ["eu-energy", "EU DG Energy", "https://energy.ec.europa.eu/node/2/rss_en", 300],
+  ["energylive", "Energy Live News", "https://www.energylivenews.com/feed", 120],
+  ["storage-news", "Energy Storage News", "https://www.energy-storage.news/feed", 120],
+  ["powermag", "POWER Magazine", "https://www.powermag.com/feed", 180],
 ].map(([id, name, url, every]) => ({ id, name, url, every }));
 
 const QUOTES = [
