@@ -1,0 +1,7 @@
+name = "news-terminal"
+main = "src/worker.js"
+compatibility_date = "2025-09-01"
+
+# Static site (the app itself): served free, from Cloudflare's edge
+[assets]
+directory = "./public"
